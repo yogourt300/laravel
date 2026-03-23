@@ -21,10 +21,7 @@ class TicketApiController extends Controller
                     'status'      => $ticket->status,
                     'type'        => $ticket->type,
                     'hours_spent' => $ticket->hours_spent,
-                    'project'     => [
-                        'id'   => $ticket->project->id,
-                        $ticket->project->name,
-                    ],
+                    'project' => ['id' => $ticket->project->id, 'name' => $ticket->project->name],
                     'created_at'  => $ticket->created_at->format('d/m/Y H:i'),
                 ];
             });
