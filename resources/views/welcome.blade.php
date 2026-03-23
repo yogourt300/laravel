@@ -4,30 +4,43 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'ESN Manager') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css'])
 </head>
-<body class="min-h-screen bg-gray-100 text-gray-900">
-    <main class="flex min-h-screen items-center justify-center px-6">
-        <div class="w-full max-w-md rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-100">
-            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-blue-600">ESN Manager</p>
-            <h1 class="mt-4 text-3xl font-bold text-gray-900">Bienvenue</h1>
-            <p class="mt-3 text-sm text-gray-600">Connecte-toi ou cree ton compte pour acceder a l'application.</p>
+<body class="welcome-page">
+    <main class="welcome-layout">
+        <section class="welcome-card">
+            <p class="welcome-eyebrow">ESN Manager</p>
+            <h1 class="welcome-title">Pilote tes projets et tickets dans une interface claire.</h1>
+            <p class="welcome-text">Connexion, gestion des projets, tickets et profils utilisateurs sont centralises dans une seule application Laravel.</p>
 
-            <div class="mt-8 flex flex-col gap-3">
+            <div class="welcome-actions">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700">
-                        Acceder au dashboard
-                    </a>
+                    <a href="{{ route('dashboard') }}" class="button button--primary">Acceder au dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700">
-                        Connexion
-                    </a>
-                    <a href="{{ route('register') }}" class="rounded-xl border border-gray-300 px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-50">
-                        Inscription
-                    </a>
+                    <a href="{{ route('login') }}" class="button button--primary">Se connecter</a>
+                    <a href="{{ route('register') }}" class="button button--secondary">Creer un compte</a>
                 @endauth
             </div>
-        </div>
+        </section>
+
+        <aside class="welcome-side">
+            <div class="feature-list">
+                <article class="feature-item">
+                    <h2 class="feature-item__title">Gestion centralisee</h2>
+                    <p class="muted-text">Retrouve les projets, les tickets et les droits d'acces depuis la meme interface.</p>
+                </article>
+                <article class="feature-item">
+                    <h2 class="feature-item__title">Roles metier</h2>
+                    <p class="muted-text">Admins, consultants et clients peuvent voir uniquement ce qui leur correspond.</p>
+                </article>
+                <article class="feature-item">
+                    <h2 class="feature-item__title">Base propre</h2>
+                    <p class="muted-text">Toute la presentation repose maintenant sur un seul fichier CSS commun au projet.</p>
+                </article>
+            </div>
+        </aside>
     </main>
 </body>
 </html>

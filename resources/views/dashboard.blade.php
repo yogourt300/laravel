@@ -1,72 +1,69 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Tableau de bord') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <p class="text-sm text-gray-500">Projets totaux</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $totalProjects }}</p>
+@section('title', 'Dashboard')
+
+@section('header')
+    <h1 class="page-title">Tableau de bord</h1>
+@endsection
+
+@section('content')
+<div class="stack-lg">
+    <section class="metric-grid">
+        <article class="metric-card">
+            <p class="metric-card__label">Projets totaux</p>
+            <p class="metric-card__value">{{ $totalProjects }}</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-card__label">Projets actifs</p>
+            <p class="metric-card__value metric-card__value--blue">{{ $activeProjects }}</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-card__label">Tickets</p>
+            <p class="metric-card__value">{{ $totalTickets }}</p>
+        </article>
+        <article class="metric-card">
+            <p class="metric-card__label">Heures saisies</p>
+            <p class="metric-card__value metric-card__value--orange">{{ number_format($totalHours, 2) }} h</p>
+        </article>
+    </section>
+
+    <section class="content-grid">
+        <article class="panel panel--padded">
+            <div class="split-header">
+                <div>
+                    <h2 class="section-title">Activite recente</h2>
+                    <p class="section-text">Les derniers tickets saisis dans l'application.</p>
                 </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <p class="text-sm text-gray-500">Projets actifs</p>
-                    <p class="mt-2 text-3xl font-bold text-blue-600">{{ $activeProjects }}</p>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <p class="text-sm text-gray-500">Tickets</p>
-                    <p class="mt-2 text-3xl font-bold text-gray-900">{{ $totalTickets }}</p>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <p class="text-sm text-gray-500">Heures saisies</p>
-                    <p class="mt-2 text-3xl font-bold text-orange-600">{{ number_format($totalHours, 2) }} h</p>
-                </div>
+                <a href="{{ route('tickets.index') }}" class="button button--ghost">Voir les tickets</a>
             </div>
 
-            <div class="mt-6 grid gap-6 lg:grid-cols-3">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 lg:col-span-2">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-semibold text-gray-900">Activité récente</h3>
-                        <a href="{{ route('tickets.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">Voir tous les tickets</a>
+            <div class="list">
+                @forelse ($recentTickets as $ticket)
+                    <div class="list-item">
+                        <div>
+                            <p class="list-item__title">
+                                <a href="{{ route('tickets.show', $ticket->id) }}" class="table-link">{{ $ticket->title }}</a>
+                            </p>
+                            <p class="list-item__meta">{{ $ticket->project->name }} • {{ $ticket->created_at->format('d/m/Y H:i') }}</p>
+                        </div>
+                        <strong>{{ number_format($ticket->hours_spent, 2) }} h</strong>
                     </div>
-
-                    <div class="mt-4 space-y-4">
-                        @forelse ($recentTickets as $ticket)
-                            <div class="flex items-center justify-between border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                                <div>
-                                    <a href="{{ route('tickets.show', $ticket->id) }}" class="font-semibold text-gray-900 hover:text-blue-600">
-                                        {{ $ticket->title }}
-                                    </a>
-                                    <p class="text-sm text-gray-500">
-                                        {{ $ticket->project->name }} • {{ $ticket->created_at->format('d/m/Y H:i') }}
-                                    </p>
-                                </div>
-                                <span class="text-sm font-semibold text-orange-600">{{ number_format($ticket->hours_spent, 2) }} h</span>
-                            </div>
-                        @empty
-                            <p class="text-sm text-gray-500">Aucun ticket enregistré pour le moment.</p>
-                        @endforelse
-                    </div>
-                </div>
-
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Résumé business</h3>
-                    <p class="mt-4 text-sm text-gray-500">Chiffre d'affaires théorique</p>
-                    <p class="mt-2 text-3xl font-bold text-green-600">{{ number_format($totalRevenue, 2, ',', ' ') }} €</p>
-
-                    <div class="mt-6 space-y-3">
-                        <a href="{{ route('projects.create') }}" class="block rounded-lg bg-blue-600 px-4 py-3 text-center font-semibold text-white hover:bg-blue-700">
-                            Nouveau projet
-                        </a>
-                        <a href="{{ route('tickets.create') }}" class="block rounded-lg border border-gray-300 px-4 py-3 text-center font-semibold text-gray-700 hover:bg-gray-50">
-                            Nouveau ticket
-                        </a>
-                    </div>
-                </div>
+                @empty
+                    <p class="muted-text">Aucun ticket enregistre pour le moment.</p>
+                @endforelse
             </div>
-        </div>
-    </div>
-</x-app-layout>
+        </article>
+
+        <aside class="panel panel--padded">
+            <h2 class="section-title">Resume business</h2>
+            <p class="section-text">Chiffre d'affaires theorique base sur les tickets et le taux des projets.</p>
+            <p class="metric-card__value metric-card__value--green">{{ number_format($totalRevenue, 2, ',', ' ') }} EUR</p>
+
+            <div class="stack-md">
+                <a href="{{ route('projects.create') }}" class="button button--primary">Nouveau projet</a>
+                <a href="{{ route('tickets.create') }}" class="button button--secondary">Nouveau ticket</a>
+            </div>
+        </aside>
+    </section>
+</div>
+@endsection
