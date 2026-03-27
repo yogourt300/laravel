@@ -41,7 +41,14 @@
                             <td class="center-text mono-text">{{ number_format($ticket->hours_spent, 2) }} h</td>
                             <td>{{ $ticket->type }}</td>
                             <td>
-                                <span class="badge {{ $ticket->status === 'ouvert' ? 'badge--blue' : ($ticket->status === 'en cours' ? 'badge--yellow' : 'badge--gray') }}">
+                                @php
+                                        $badgeClass = match($ticket->status) {
+                                            'ouvert'    => 'badge--blue',
+                                            'en cours'  => 'badge--yellow',
+                                            'ferme'     => 'badge--gray',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">
                                     {{ $ticket->status }}
                                 </span>
                             </td>

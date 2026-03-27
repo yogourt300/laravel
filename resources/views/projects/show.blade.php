@@ -41,4 +41,19 @@
         <p class="section-text">{{ $project->description ?? 'Pas de description.' }}</p>
     </section>
 </div>
+<div class="panel panel--padded" style="margin-top: 1.5rem;">
+    <h3 class="section-title">Tickets du projet</h3>
+    @forelse($project->tickets as $ticket)
+        <div class="list-item">
+            <div>
+                <a href="{{ route('tickets.show', $ticket->id) }}" class="table-link">{{ $ticket->title }}</a>
+                <p class="list-item__meta">{{ $ticket->type }} • {{ $ticket->status }}</p>
+            </div>
+            <strong>{{ number_format($ticket->hours_spent, 2) }} h</strong>
+        </div>
+    @empty
+        <p class="muted-text">Aucun ticket sur ce projet.</p>
+    @endforelse
+</div>
+
 @endsection
