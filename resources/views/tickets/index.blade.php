@@ -13,10 +13,14 @@
 
     <div class="toolbar">
         <span class="form-label">Statuts :</span>
-        <button type="button" onclick="filterTickets('all')" class="button button--secondary">Tous</button>
-        <button type="button" onclick="filterTickets('ouvert')" class="button button--secondary">Ouvert</button>
-        <button type="button" onclick="filterTickets('en cours')" class="button button--secondary">En cours</button>
-        <button type="button" onclick="filterTickets('ferme')" class="button button--secondary">Ferme</button>
+            <button type="button" onclick="filterTickets('all')" class="button button--secondary">Tous</button>
+            <button type="button" onclick="filterTickets('nouveau')" class="button button--secondary">Nouveau</button>
+            <button type="button" onclick="filterTickets('en cours')" class="button button--secondary">En cours</button>
+            <button type="button" onclick="filterTickets('en attente client')" class="button button--secondary">En attente</button>
+            <button type="button" onclick="filterTickets('termine')" class="button button--secondary">Terminé</button>
+            <button type="button" onclick="filterTickets('a valider')" class="button button--secondary">À valider</button>
+            <button type="button" onclick="filterTickets('valide')" class="button button--secondary">Validé</button>
+            <button type="button" onclick="filterTickets('refuse')" class="button button--secondary">Refusé</button>
         <div class="toolbar__spacer"></div>
         <a href="{{ route('tickets.create') }}" class="button button--primary">Creer un ticket</a>
     </div>
@@ -41,16 +45,20 @@
                             <td class="center-text mono-text">{{ number_format($ticket->hours_spent, 2) }} h</td>
                             <td>{{ $ticket->type }}</td>
                             <td>
+                                {{-- Badge --}}
                                 @php
-                                        $badgeClass = match($ticket->status) {
-                                            'ouvert'    => 'badge--blue',
-                                            'en cours'  => 'badge--yellow',
-                                            'ferme'     => 'badge--gray',
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $badgeClass }}">
-                                    {{ $ticket->status }}
-                                </span>
+                                    $badgeClass = match($ticket->status) {
+                                        'nouveau'           => 'badge--blue',
+                                        'en cours'          => 'badge--yellow',
+                                        'en attente client' => 'badge--orange',
+                                        'termine'           => 'badge--gray',
+                                        'a valider'         => 'badge--purple',
+                                        'valide'            => 'badge--green',
+                                        'refuse'            => 'badge--red',
+                                        default             => 'badge--gray',
+                                    };
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">{{ $ticket->status }}</span>
                             </td>
                         </tr>
                     @empty

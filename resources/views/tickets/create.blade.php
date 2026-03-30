@@ -53,6 +53,16 @@
             <textarea id="description" name="description" class="form-textarea" placeholder="Detaille l'intervention..."></textarea>
         </div>
 
+        <div class="form-row">
+            <label for="status" class="form-label">Statut</label>
+            <select id="status" name="status" class="form-select">
+                <option value="nouveau">Nouveau</option>
+                <option value="en cours">En cours</option>
+                <option value="en attente client">En attente client</option>
+                <option value="termine">Terminé</option>
+            </select>
+        </div>
+
         <div class="form-actions">
             <button type="submit" id="submit-btn" class="button button--primary">Enregistrer le ticket</button>
             <div id="success" class="status-message is-hidden">Ticket cree avec succes.</div>
@@ -92,7 +102,7 @@
                 return;
             }
 
-            fetch("{{ route('tickets.store') }}", {
+            fetch("/api/tickets", {
                 method: 'POST',
                 body: new FormData(form),
                 headers: {

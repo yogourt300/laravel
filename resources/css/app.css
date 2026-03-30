@@ -534,12 +534,15 @@ textarea {
     border: 1px solid transparent;
 }
 
-.badge--blue { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
-.badge--yellow { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
-.badge--red { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
-.badge--gray { background: #e5e7eb; color: #4b5563; border-color: #cbd5e1; }
-.badge--green { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
-.badge--orange { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+.badge--blue { background: #dbeafe; color: #1d4ed8; }
+.badge--yellow { background: #fef3c7; color: #b45309; }
+.badge--red { background: #fee2e2; color: #b91c1c; }
+.badge--gray { background: #e5e7eb; color: #4b5563; }
+.badge--green { background: #dcfce7; color: #15803d; }
+.badge--orange { background: #ffedd5; color: #c2410c; }
+.badge--orange  { background: #fff3e0; color: #e65100; }
+.badge--purple  { background: #f3e5f5; color: #6a1b9a; }
+.badge--red     { background: #fdecea; color: #b71c1c; }
 
 .stats-grid {
     display: grid;
