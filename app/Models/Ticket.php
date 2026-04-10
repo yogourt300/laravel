@@ -9,18 +9,27 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    // ✅ VÉRIFIE BIEN QUE 'project_id' EST ÉCRIT ICI !
     protected $fillable = [
-        'project_id', 
-        'title', 
-        'description', 
-        'hours_spent', 
-        'type', 
-        'status'
+        'project_id',
+        'user_id',
+        'title',
+        'description',
+        'type',
+        'status',
     ];
 
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function timeEntries()
+    {
+        return $this->hasMany(TimeEntry::class);
     }
 }

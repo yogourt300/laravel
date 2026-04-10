@@ -2,69 +2,52 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_CONSULTANT = 'consultant';
-    public const ROLE_CLIENT = 'client';
+    protected $fillable = ['name', 'email', 'password', 'role'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'role',
-        'password',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
-    public function clientProjects()
+    public function ownedProjects()
     {
         return $this->hasMany(Project::class, 'client_id');
     }
 
-    public function consultantProjects()
+    public function assignedProjects()
     {
-        return $this->belongsToMany(Project::class, 'consultant_project')
-            ->withTimestamps();
+        return $this->belongsToMany(Project::class, 'consultant_project')->withTimestamps();
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->role === 'admin';
+    }
+
+    public function isClient(): bool
+    {
+        return $this->role === 'client';
+    }
+
+    public function isCollaborateur(): bool
+    {
+        return $this->role === 'collaborateur';
     }
 }

@@ -4,36 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Ticket;
-use Illuminate\Http\Request;
+use App\Models\TimeEntry;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Statistiques simples
-        $totalProjects = Project::count();
-        $activeProjects = Project::where('status', 'actif')->count();
-        $totalTickets = Ticket::count();
-        
-        // 2. Somme de toutes les heures travaillées dans l'ESN
-        $totalHours = Ticket::sum('hours_spent');
+        $user = auth()->user();
 
-        // 3. Calcul du chiffre d'affaires théorique (heures * taux horaire)
-        // On fait une petite boucle sur les tickets pour être précis
-        $totalRevenue = Ticket::with('project')->get()->sum(function($ticket) {
-            return $ticket->hours_spent * ($ticket->project->hourly_rate ?? 0);
-        });
-
-        // 4. Les 5 derniers tickets créés pour voir l'activité récente
-        $recentTickets = Ticket::with('project')->orderBy('created_at', 'desc')->take(5)->get();
+        if ($user->isAdmin()) {
+            $totalProjects = Project::count();
+            $totalTickets  = Ticket::count();
+            $hoursInclus   = TimeEntry::whereHas('ticket', fn($q) => $q->where('type', 'inclus'))->sum('hours');
+            $hoursBillable = TimeEntry::whereHas('ticket', fn($q) => $q->where('type', 'facturable'))->sum('hours');
+            $recentEntries = TimeEntry::with(['ticket.project', 'user'])->orderBy('created_at', 'desc')->take(8)->get();
+            $pendingTickets = collect();
+        } elseif ($user->isClient()) {
+            $totalProjects = Project::where('client_id', $user->id)->count();
+            $totalTickets  = Ticket::whereHas('project', fn($q) => $q->where('client_id', $user->id))->count();
+            $hoursInclus   = 0;
+            $hoursBillable = 0;
+            $recentEntries = collect();
+            $pendingTickets = Ticket::with('project')
+                ->where('status', 'a_valider')
+                ->whereHas('project', fn($q) => $q->where('client_id', $user->id))
+                ->get();
+        } else {
+            $totalProjects = $user->assignedProjects()->count();
+            $totalTickets  = Ticket::where('user_id', $user->id)->count();
+            $hoursInclus   = TimeEntry::where('user_id', $user->id)->whereHas('ticket', fn($q) => $q->where('type', 'inclus'))->sum('hours');
+            $hoursBillable = TimeEntry::where('user_id', $user->id)->whereHas('ticket', fn($q) => $q->where('type', 'facturable'))->sum('hours');
+            $recentEntries = TimeEntry::with(['ticket.project', 'user'])->where('user_id', $user->id)->orderBy('created_at', 'desc')->take(8)->get();
+            $pendingTickets = collect();
+        }
 
         return view('dashboard', compact(
-            'totalProjects', 
-            'activeProjects', 
-            'totalTickets', 
-            'totalHours', 
-            'totalRevenue',
-            'recentTickets'
+            'totalProjects', 'totalTickets',
+            'hoursInclus', 'hoursBillable',
+            'recentEntries', 'pendingTickets'
         ));
     }
 }

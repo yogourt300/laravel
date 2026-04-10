@@ -14,7 +14,7 @@
         @method('PATCH')
 
         <div class="form-row">
-            <label for="project_id" class="form-label">Projet associe</label>
+            <label for="project_id" class="form-label">Projet associé</label>
             <select id="project_id" name="project_id" class="form-select">
                 @foreach($projects as $project)
                     <option value="{{ $project->id }}" {{ $ticket->project_id == $project->id ? 'selected' : '' }}>
@@ -29,26 +29,23 @@
             <input id="title" name="title" type="text" class="form-input" value="{{ $ticket->title }}">
         </div>
 
-        <div class="form-row form-row--two">
-            <div class="form-row">
-                <label for="hours_spent" class="form-label">Temps passe (h)</label>
-                <input id="hours_spent" name="hours_spent" type="number" step="0.25" class="form-input" value="{{ $ticket->hours_spent }}">
-            </div>
-            <div class="form-row">
-                <label for="type" class="form-label">Type</label>
-                <select id="type" name="type" class="form-select">
-                    <option value="inclus" {{ $ticket->type === 'inclus' ? 'selected' : '' }}>Inclus</option>
-                    <option value="facturable" {{ $ticket->type === 'facturable' ? 'selected' : '' }}>Facturable</option>
-                </select>
-            </div>
+        <div class="form-row">
+            <label for="type" class="form-label">Type</label>
+            <select id="type" name="type" class="form-select">
+                <option value="inclus"     {{ $ticket->type === 'inclus'     ? 'selected' : '' }}>Inclus</option>
+                <option value="facturable" {{ $ticket->type === 'facturable' ? 'selected' : '' }}>Facturable</option>
+            </select>
         </div>
 
         <div class="form-row">
             <label for="status" class="form-label">Statut</label>
             <select id="status" name="status" class="form-select">
-                @foreach(['nouveau','en cours','en attente client','termine','a valider','valide','refuse'] as $s)
-                    <option value="{{ $s }}" {{ $ticket->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                @endforeach
+                <option value="nouveau"    {{ $ticket->status === 'nouveau'    ? 'selected' : '' }}>Nouveau</option>
+                <option value="en_cours"   {{ $ticket->status === 'en_cours'   ? 'selected' : '' }}>En cours</option>
+                <option value="en_attente" {{ $ticket->status === 'en_attente' ? 'selected' : '' }}>En attente client</option>
+                <option value="a_valider"  {{ $ticket->status === 'a_valider'  ? 'selected' : '' }}>À valider</option>
+                <option value="valide"     {{ $ticket->status === 'valide'     ? 'selected' : '' }}>Validé</option>
+                <option value="refuse"     {{ $ticket->status === 'refuse'     ? 'selected' : '' }}>Refusé</option>
             </select>
         </div>
 

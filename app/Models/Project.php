@@ -9,29 +9,25 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'client_name',
-        'client_id',
-        'description',
-        'total_hours',
-        'hourly_rate',
-        'status',
-    ];
-
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
-    }
+    protected $fillable = ['client_id', 'name', 'description', 'status'];
 
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    public function consultants()
+    public function tickets()
     {
-        return $this->belongsToMany(User::class, 'consultant_project')
-            ->withTimestamps();
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
+    }
+
+    public function collaborateurs()
+    {
+        return $this->belongsToMany(User::class, 'consultant_project')->withTimestamps();
     }
 }

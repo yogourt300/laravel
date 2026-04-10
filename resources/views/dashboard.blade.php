@@ -2,66 +2,91 @@
 
 @section('title', 'Dashboard')
 
-@section('header')
-    <h1 class="page-title">Tableau de bord</h1>
-@endsection
-
 @section('content')
 <div class="stack-lg">
     <section class="metric-grid">
         <article class="metric-card">
-            <p class="metric-card__label">Projets totaux</p>
+            <p class="metric-card__label">Projets</p>
             <p class="metric-card__value">{{ $totalProjects }}</p>
-        </article>
-        <article class="metric-card">
-            <p class="metric-card__label">Projets actifs</p>
-            <p class="metric-card__value metric-card__value--blue">{{ $activeProjects }}</p>
         </article>
         <article class="metric-card">
             <p class="metric-card__label">Tickets</p>
             <p class="metric-card__value">{{ $totalTickets }}</p>
         </article>
-        <article class="metric-card">
-            <p class="metric-card__label">Heures saisies</p>
-            <p class="metric-card__value metric-card__value--orange">{{ number_format($totalHours, 2) }} h</p>
-        </article>
+        @if(!auth()->user()->isClient())
+            <article class="metric-card">
+                <p class="metric-card__label">Heures incluses</p>
+                <p class="metric-card__value metric-card__value--blue">{{ number_format($hoursInclus, 2) }} h</p>
+            </article>
+            <article class="metric-card">
+                <p class="metric-card__label">Heures facturables</p>
+                <p class="metric-card__value metric-card__value--orange">{{ number_format($hoursBillable, 2) }} h</p>
+            </article>
+        @endif
     </section>
 
-    <section class="content-grid">
-        <article class="panel panel--padded">
-            <div class="split-header">
-                <div>
-                    <h2 class="section-title">Activite recente</h2>
-                    <p class="section-text">Les derniers tickets saisis dans l'application.</p>
-                </div>
-                <a href="{{ route('tickets.index') }}" class="button button--ghost">Voir les tickets</a>
-            </div>
-
+    @if($pendingTickets->isNotEmpty())
+        <section class="panel panel--padded">
+            <h2 class="section-title">Tickets à valider</h2>
+            <p class="section-text">Ces tickets facturables attendent votre validation.</p>
             <div class="list">
-                @forelse ($recentTickets as $ticket)
+                @foreach($pendingTickets as $ticket)
                     <div class="list-item">
                         <div>
                             <p class="list-item__title">
                                 <a href="{{ route('tickets.show', $ticket->id) }}" class="table-link">{{ $ticket->title }}</a>
                             </p>
-                            <p class="list-item__meta">{{ $ticket->project->name }} • {{ $ticket->created_at->format('d/m/Y H:i') }}</p>
+                            <p class="list-item__meta">{{ $ticket->project->name }}</p>
                         </div>
-                        <strong>{{ number_format($ticket->hours_spent, 2) }} h</strong>
+                        <div style="display:flex;gap:.5rem;">
+                            <form method="POST" action="{{ route('tickets.valider', $ticket->id) }}">
+                                @csrf @method('PATCH')
+                                <button type="submit" class="button button--primary">Valider</button>
+                            </form>
+                            <form method="POST" action="{{ route('tickets.refuser', $ticket->id) }}">
+                                @csrf @method('PATCH')
+                                <button type="submit" class="button button--danger">Refuser</button>
+                            </form>
+                        </div>
                     </div>
-                @empty
-                    <p class="muted-text">Aucun ticket enregistre pour le moment.</p>
-                @endforelse
+                @endforeach
             </div>
-        </article>
+        </section>
+    @endif
+
+    <section class="content-grid">
+        @if($recentEntries->isNotEmpty())
+            <article class="panel panel--padded">
+                <div class="split-header">
+                    <h2 class="section-title">Activité récente</h2>
+                    <a href="{{ route('tickets.index') }}" class="button button--ghost">Voir les tickets</a>
+                </div>
+                <div class="list">
+                    @foreach($recentEntries as $entry)
+                        <div class="list-item">
+                            <div>
+                                <p class="list-item__title">
+                                    <a href="{{ route('tickets.show', $entry->ticket->id) }}" class="table-link">{{ $entry->ticket->title }}</a>
+                                </p>
+                                <p class="list-item__meta">{{ $entry->ticket->project->name }} • {{ $entry->user->name ?? '—' }} • {{ $entry->date->format('d/m/Y') }}</p>
+                            </div>
+                            <strong class="mono-text">{{ number_format($entry->hours, 2) }} h</strong>
+                        </div>
+                    @endforeach
+                </div>
+            </article>
+        @endif
 
         <aside class="panel panel--padded">
-            <h2 class="section-title">Resume business</h2>
-            <p class="section-text">Chiffre d'affaires theorique base sur les tickets et le taux des projets.</p>
-            <p class="metric-card__value metric-card__value--green">{{ number_format($totalRevenue, 2, ',', ' ') }} EUR</p>
-
+            <h2 class="section-title">Actions rapides</h2>
             <div class="stack-md">
-                <a href="{{ route('projects.create') }}" class="button button--primary">Nouveau projet</a>
-                <a href="{{ route('tickets.create') }}" class="button button--secondary">Nouveau ticket</a>
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('projects.create') }}" class="button button--primary">Nouveau projet</a>
+                    <a href="{{ route('users.create') }}" class="button button--secondary">Nouvel utilisateur</a>
+                @endif
+                @if(!auth()->user()->isClient())
+                    <a href="{{ route('tickets.create') }}" class="button button--secondary">Nouveau ticket</a>
+                @endif
             </div>
         </aside>
     </section>

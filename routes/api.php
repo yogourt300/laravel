@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\TicketApiController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/tickets', [TicketApiController::class, 'index']);
-Route::post('/tickets', [TicketApiController::class, 'store']);
+Route::get('/tickets',  [TicketController::class, 'indexApi'])->middleware('auth')->name('api.tickets.index');
+Route::post('/tickets', [TicketController::class, 'storeApi'])->name('api.tickets.store');
