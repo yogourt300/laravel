@@ -153,33 +153,6 @@ class TicketController extends Controller
         return back()->with('success', 'Ticket refusé.');
     }
 
-    public function indexApi()
-    {
-        $user = auth()->user();
-
-        if ($user->isAdmin()) {
-            $tickets = Ticket::with('project')->orderBy('created_at', 'desc')->take(20)->get();
-        } elseif ($user->isClient()) {
-            $tickets = Ticket::with('project')
-                ->whereHas('project', fn($q) => $q->where('client_id', $user->id))
-                ->orderBy('created_at', 'desc')->take(20)->get();
-        } else {
-            $tickets = Ticket::with('project')
-                ->whereHas('project.collaborateurs', fn($q) => $q->where('users.id', $user->id))
-                ->orderBy('created_at', 'desc')->take(20)->get();
-        }
-
-        return response()->json(
-            $tickets->map(fn($t) => [
-                'id'      => $t->id,
-                'title'   => $t->title,
-                'status'  => $t->status,
-                'type'    => $t->type,
-                'project' => $t->project->name,
-            ])
-        );
-    }
-
     public function storeApi(Request $request)
     {
         $validated = $request->validate([

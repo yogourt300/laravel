@@ -28,7 +28,6 @@
         <button type="button" onclick="filterBy('type', 'inclus')" class="button button--secondary">Inclus</button>
         <button type="button" onclick="filterBy('type', 'facturable')" class="button button--secondary">Facturable</button>
         <div class="toolbar__spacer"></div>
-        <span id="api-count" class="section-text"></span>
         @if(!auth()->user()->isClient())
             <a href="{{ route('tickets.create') }}" class="button button--primary">Créer un ticket</a>
         @endif
@@ -93,10 +92,5 @@
         });
     }
 
-    fetch('/api/tickets')
-        .then(function(response) { return response.json(); })
-        .then(function(data) {
-            document.getElementById('api-count').textContent = data.length + ' ticket(s) chargé(s) via API';
-        });
 </script>
 @endsection
